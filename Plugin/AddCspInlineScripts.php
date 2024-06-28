@@ -3,8 +3,8 @@
 namespace Yireo\CspWhitelistInlineJs\Plugin;
 
 use Magento\Framework\View\Element\Template;
-use Yireo\GoogleTagManager2\Util\ScriptFinder;
-use Yireo\GoogleTagManager2\Util\SecureHtmlRendererStub;
+use Yireo\CspWhitelistInlineJs\Util\ScriptFinder;
+use Yireo\CspWhitelistInlineJs\Util\SecureHtmlRendererStub;
 
 class AddCspInlineScripts
 {

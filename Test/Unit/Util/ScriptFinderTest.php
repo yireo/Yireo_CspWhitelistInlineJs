@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Yireo\GoogleTagManager2\Test\Unit\Util;
+namespace Yireo\CspWhitelistInlineJs\Test\Unit\Util;
 
 use PHPUnit\Framework\TestCase;
-use Yireo\GoogleTagManager2\Util\ScriptFinder;
+use Yireo\CspWhitelistInlineJs\Util\ScriptFinder;
 
 class ScriptFinderTest extends TestCase
 {
