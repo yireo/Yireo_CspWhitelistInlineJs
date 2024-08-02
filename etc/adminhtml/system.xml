@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="yireo" sortOrder="999" translate="label">
+            <label>Yireo</label>
+        </tab>
+        <section id="csp_whitelist_inline_js" translate="label" sortOrder="342" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Yireo CSP whiteline inline JS</label>
+            <tab>yireo</tab>
+            <resource>Yireo_CspWhitelistInlineJs::config</resource>
+            <group id="settings" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Settings</label>
+                <field id="logging" type="select" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Logging</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
