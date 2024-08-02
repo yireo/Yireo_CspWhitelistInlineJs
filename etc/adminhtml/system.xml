@@ -5,7 +5,7 @@
             <label>Yireo</label>
         </tab>
         <section id="csp_whitelist_inline_js" translate="label" sortOrder="342" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Yireo CSP whiteline inline JS</label>
+            <label>Yireo CspWhitelistInlineJs</label>
             <tab>yireo</tab>
             <resource>Yireo_CspWhitelistInlineJs::config</resource>
             <group id="settings" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
