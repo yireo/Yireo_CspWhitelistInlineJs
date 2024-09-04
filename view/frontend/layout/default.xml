@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:View/Layout:etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="head.additional">
+            <arguments>
+                <argument name="csp_whitelist" xsi:type="boolean">true</argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

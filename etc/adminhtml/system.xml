@@ -10,6 +10,10 @@
             <resource>Yireo_CspWhitelistInlineJs::config</resource>
             <group id="settings" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Settings</label>
+                <field id="mode" type="select" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Mode</label>
+                    <source_model>Yireo\CspWhitelistInlineJs\Config\Source\Mode</source_model>
+                </field>
                 <field id="logging" type="select" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Logging</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

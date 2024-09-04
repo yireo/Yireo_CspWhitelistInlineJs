@@ -3,6 +3,7 @@
     <default>
         <csp_whitelist_inline_js>
             <settings>
+                <mode>custom</mode>
                 <logging>0</logging>
             </settings>
         </csp_whitelist_inline_js>

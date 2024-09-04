@@ -5,39 +5,56 @@ namespace Yireo\CspWhitelistInlineJs\Logger;
 use Magento\Framework\Filesystem;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\App\Filesystem\DirectoryList;
-use Yireo\CspWhitelistInlineJs\Config\Config;
 
 class ScriptLogger
 {
     private DirectoryList $directoryList;
     private Filesystem $filesystem;
-    private Config $config;
+
+    private array $templates = [];
 
     public function __construct(
         DirectoryList $directoryList,
         Filesystem $filesystem,
-        Config $config
     ) {
         $this->directoryList = $directoryList;
         $this->filesystem = $filesystem;
-        $this->config = $config;
     }
 
-    public function log(Template $block)
+    public function add(Template $block): bool
     {
-        if (true !== $this->config->logging()) {
-            return;
+        $template = $block->getTemplateFile();
+        if (empty($template)) {
+            return false;
         }
 
+        $reader = $this->filesystem->getDirectoryRead($this->directoryList::ROOT);
+        if (false === $reader->isFile($template)) {
+            return false;
+        }
+
+        $this->templates[] = $template;
+        return true;
+    }
+
+    public function log()
+    {
         $logFile = 'yireo-csp-whitelist-inline-js.log';
-        $msg = $block->getTemplateFile() . "\n";
 
         $writer = $this->filesystem->getDirectoryWrite($this->directoryList::LOG);
-        if ($writer->isExist()) {
-            $writer->writeFile($logFile, $msg, 'a+');
-            return;
+        if ($writer->isExist($logFile)) {
+            $currentTemplates = explode("\n", trim($writer->readFile($logFile)));
+        } else {
+            $currentTemplates = [];
         }
 
-        $writer->writeFile($logFile, $msg, 'w+');
+        $templates = array_merge($currentTemplates, $this->templates);
+        $templates = array_unique($templates);
+        sort($templates);
+
+        $this->templates = [];
+
+        $contents = implode("\n", $templates)."\n";
+        $writer->writeFile($logFile, $contents, 'w+');
     }
 }

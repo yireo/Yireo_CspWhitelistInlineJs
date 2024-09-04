@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 4 September 2024
+### Added
+- New default mode `custom` to only allow blocks that are explicitly whitelisted
+
 ## [0.0.3] - 2 August 2024
 ### Fixed
 - Add a logger for analysing which scripts are fixed

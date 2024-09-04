@@ -2,14 +2,11 @@
 
 namespace Yireo\CspWhitelistInlineJs\Config;
 
-use Magento\Cookie\Helper\Cookie as CookieHelper;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\State as AppState;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Yireo\GoogleTagManager2\Model\Config\Source\ViewCartOccurancesOptions;
+use Yireo\CspWhitelistInlineJs\Config\Source\Mode;
 
 class Config
 {
@@ -22,6 +19,11 @@ class Config
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
+    }
+
+    public function getMode(): string
+    {
+        return $this->getConfigValue('csp_whitelist_inline_js/settings/mode', Mode::WHITELIST_CUSTOM);
     }
 
     public function logging(): bool
