@@ -15,7 +15,7 @@ class ScriptLogger
 
     public function __construct(
         DirectoryList $directoryList,
-        Filesystem $filesystem,
+        Filesystem $filesystem
     ) {
         $this->directoryList = $directoryList;
         $this->filesystem = $filesystem;
