@@ -17,7 +17,7 @@ bin/magento module:enable Yireo_CspWhitelistInlineJs
 ## Mode: Custom whitelisting
 A block can be whitelisted automatically by this module, using one of the following techniques:
 
-### 1) Custom whitelisting by XML layout
+### 1. Custom whitelisting by XML layout
 You can whitelist a specific `block` via the XML layout, by adding an argument `csp_whitelist`:
 ```xml
 <?xml version="1.0"?>
@@ -32,9 +32,12 @@ You can whitelist a specific `block` via the XML layout, by adding an argument `
 </page>
 ```
 
+**Note that there is still a security issue here, because the layout could be updated via the database as well (which could be hijacked via SQL injection).**
+
+### 2. Via DI plugin
 You could also create a DI plugin `afterAllow` on `\Yireo\CspWhitelistInlineJs\Util\AllowBlock::allow(Template $block)`.
 
-### 2) Mode: Whitelist everything
+## Mode: Whitelist everything
 With this mode, any inline script is simply allowed. It defeats the purpose of CSP, in general, but gets the job done. Do make sure to log things, so that you can use a different mode after a while. If you keep using this mode in production, you don't get it.
 
 ## Mode: Whitelist everything
