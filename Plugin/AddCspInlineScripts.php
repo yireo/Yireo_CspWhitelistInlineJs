@@ -31,7 +31,7 @@ class AddCspInlineScripts
     public function afterToHtml(Template $block, $html): string
     {
         if (false === $this->allowBlock->allow($block)) {
-            return $html;
+            return (string)$html;
         }
 
         if (true === $this->config->logging()) {
