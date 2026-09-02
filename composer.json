@@ -1,21 +1,22 @@
 {
-  "name": "yireo/magento2-csp-whitelist-inline-js",
-  "version": "0.1.1",
-  "description": "Magento module to automatically add inline JS script to CSP whitelist",
-  "type": "magento2-module",
-  "require": {
-      "magento/framework": "^102.0 || ^103.0",
-      "yireo/magento2-csp-utilities": "^1.0"
-  },
-  "license": [
-    "OSL-3.0"
-  ],
-  "autoload": {
-    "files": [
-      "registration.php"
+    "name": "yireo/magento2-csp-whitelist-inline-js",
+    "version": "0.1.1",
+    "description": "Magento module to automatically add inline JS script to CSP whitelist",
+    "type": "magento2-module",
+    "require": {
+        "magento/framework": "^102.0 || ^103.0",
+        "yireo/magento2-csp-utilities": "^1.0",
+        "php": ">=8.2 <8.6"
+    },
+    "license": [
+        "OSL-3.0"
     ],
-    "psr-4": {
-      "Yireo\\CspWhitelistInlineJs\\": ""
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Yireo\\CspWhitelistInlineJs\\": ""
+        }
     }
-  }
 }
