@@ -1,0 +1,7 @@
+{
+    "module_name": "Yireo_CspWhitelistInlineJs",
+    "composer_name": "yireo/magento2-csp-whitelist-inline-js",
+    "sequence": [
+        "Yireo_CspUtilities"
+    ]
+}
