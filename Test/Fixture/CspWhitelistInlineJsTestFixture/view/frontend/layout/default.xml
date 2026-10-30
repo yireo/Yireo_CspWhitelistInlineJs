@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="before.body.end">
+            <block name="yireo_csp_whitelist_inline_js_test_fixture.whitelisted"
+                   template="Yireo_CspWhitelistInlineJsTestFixture::whitelisted.phtml">
+                <arguments>
+                    <argument name="csp_whitelist" xsi:type="boolean">true</argument>
+                </arguments>
+            </block>
+            <block name="yireo_csp_whitelist_inline_js_test_fixture.not_whitelisted"
+                   template="Yireo_CspWhitelistInlineJsTestFixture::not-whitelisted.phtml"/>
+        </referenceContainer>
+        <referenceBlock name="head.additional">
+            <block name="yireo_csp_whitelist_inline_js_test_fixture.head_child"
+                   template="Yireo_CspWhitelistInlineJsTestFixture::head-child.phtml"/>
+        </referenceBlock>
+    </body>
+</page>
