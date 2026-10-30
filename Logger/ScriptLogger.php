@@ -43,7 +43,7 @@ class ScriptLogger
 
         $writer = $this->filesystem->getDirectoryWrite($this->directoryList::LOG);
         if ($writer->isExist($logFile)) {
-            $currentTemplates = explode("\n", trim($writer->readFile($logFile)));
+            $currentTemplates = explode("\n", trim($writer->readFile($logFile), " \f\n\r\t\v\x00"));
         } else {
             $currentTemplates = [];
         }
