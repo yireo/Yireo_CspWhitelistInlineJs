@@ -2,6 +2,11 @@
     "module_name": "Yireo_CspWhitelistInlineJs",
     "composer_name": "yireo/magento2-csp-whitelist-inline-js",
     "sequence": [
+        "Magento_Backend",
+        "Magento_Config",
+        "Magento_Store",
         "Yireo_CspUtilities"
-    ]
+    ],
+    "phpcs_severity": "7",
+    "phpstan_level": "1"
 }
