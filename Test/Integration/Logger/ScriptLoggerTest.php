@@ -62,7 +62,9 @@ class ScriptLoggerTest extends TestCase
     private function getBlock(string $template): Template
     {
         $layout = ObjectManager::getInstance()->get(LayoutInterface::class);
-        return $layout->createBlock(Template::class, '', ['data' => ['template' => $template]]);
+        /** @var Template $block */
+        $block = $layout->createBlock(Template::class, '', ['data' => ['template' => $template]]);
+        return $block;
     }
 
     private function getScriptLogger(): ScriptLogger
