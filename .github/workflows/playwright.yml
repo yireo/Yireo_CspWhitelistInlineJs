@@ -217,6 +217,7 @@ jobs:
           docker exec \
             -u root \
             -e COMPOSER_NAME="$COMPOSER_NAME" \
+            -e GITHUB_JOB="$GITHUB_JOB" \
             -e MAGENTO_MODULE="$MAGENTO_MODULE" \
             -e MAGENTO_VERSION="$MAGENTO_VERSION" \
             $PHP_CONTAINER bash -lc '
