@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 06 November 2026
+### Fixed
+- Add type hints to code
+- Pass trim() characters explicitly in ScriptLogger
+
 ## [0.1.1] - 2 October 2024
 ### Fixed
 - Prevent null HTML from causing errors
