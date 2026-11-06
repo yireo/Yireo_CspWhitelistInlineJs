@@ -15,7 +15,7 @@ jobs:
       GIT_DEPTH: 1
       GIT_STRATEGY: fetch
       DOCKER_HOST: unix:///var/run/docker.sock
-      MAGENTO_BASE_URL: "http://php:8888/"
+      MAGENTO_BASE_URL: "https://php:8443/"
       MAGENTO_BACKEND_FRONTNAME: "admin"
       MAGENTO_ADMIN_FIRSTNAME: "CI"
       MAGENTO_ADMIN_LASTNAME: "User"
@@ -55,7 +55,7 @@ jobs:
           GIT_DEPTH: 1
           GIT_STRATEGY: fetch
           DOCKER_HOST: unix:///var/run/docker.sock
-          MAGENTO_BASE_URL: "http://php:8888/"
+          MAGENTO_BASE_URL: "https://php:8443/"
           MAGENTO_BACKEND_FRONTNAME: "admin"
           MAGENTO_ADMIN_FIRSTNAME: "CI"
           MAGENTO_ADMIN_LASTNAME: "User"
@@ -225,9 +225,6 @@ jobs:
             git config --global --add safe.directory /tmp/magento/package-source
             composer self-update --2
             composer config --global --auth github-oauth.github.com "${{ github.token }}"
-            for HYVA_PACKAGE in magento2-default-theme-csp magento2-theme-module magento2-base-layout-reset magento2-email-module magento2-graphql-tokens magento2-graphql-view-model magento2-order-cancellation-webapi magento2-mollie-theme-bundle magento2-compat-module-fallback; do
-              composer config repositories.hyva-${HYVA_PACKAGE} "{\"type\": \"vcs\", \"url\": \"https://github.com/hyva-themes/${HYVA_PACKAGE}.git\", \"no-api\": true}"
-            done
             test -f /tmp/magento/package-source/.github/workflows/composer-additional.sh && source /tmp/magento/package-source/.github/workflows/composer-additional.sh || true
             test -f /tmp/magento/package-source/.github/workflows/composer-${MAGENTO_VERSION}.sh && source /tmp/magento/package-source/.github/workflows/composer-${MAGENTO_VERSION}.sh || true
           '
@@ -252,6 +249,8 @@ jobs:
             composer require -n --prefer-source -- \
               "${COMPOSER_NAME}:@dev" ${EXTRA_PACKAGES} \
               loki/magento2-functional-tests:dev-main \
+              loki-checkout/magento2-luma:@dev \
+              loki-checkout/magento2-hyva:@dev \
               yireo/magento2-enable-module-sequence:@dev \
               hyva-themes/magento2-default-theme-csp \
               hyva-themes/magento2-theme-module \
@@ -259,7 +258,6 @@ jobs:
               hyva-themes/magento2-email-module \
               hyva-themes/magento2-graphql-tokens \
               hyva-themes/magento2-graphql-view-model \
-              hyva-themes/magento2-order-cancellation-webapi \
               hyva-themes/magento2-compat-module-fallback
           '
 
@@ -312,7 +310,7 @@ jobs:
         run: |
           echo "Waiting for Magento front-end at ${MAGENTO_BASE_URL}..."
           for i in {1..60}; do
-            if curl -s "${MAGENTO_BASE_URL}" >/dev/null; then
+            if curl -k -s "${MAGENTO_BASE_URL}" >/dev/null; then
               echo "OK"; exit 0
             fi
             echo -n "."
@@ -344,6 +342,7 @@ jobs:
           TEST_TIMEOUT: ${{ vars.TEST_TIMEOUT || '60000' }}
           PLAYWRIGHT_RETRIES: ${{ vars.PLAYWRIGHT_RETRIES || '1' }}
           PLAYWRIGHT_MAX_FAILURES: ${{ vars.PLAYWRIGHT_MAX_FAILURES || '5' }}
+          NODE_TLS_REJECT_UNAUTHORIZED: "0"
         run: |
           echo "Installing npm dependencies..."
           npm install
