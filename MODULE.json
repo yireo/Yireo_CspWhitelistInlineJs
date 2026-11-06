@@ -8,5 +8,40 @@
         "Yireo_CspUtilities"
     ],
     "phpcs_severity": "7",
-    "phpstan_level": "4"
+    "phpstan_level": "4",
+    "php_versions": [
+        "7.4",
+        "8.1",
+        "8.2",
+        "8.3"
+    ],
+    "skip_magento_versions": [],
+    "skip_css_utils": false,
+    "modules": [
+        "Magento_Backend",
+        "Magento_Config",
+        "Magento_Csp",
+        "Magento_Directory",
+        "Magento_Store",
+        "Magento_Theme",
+        "Yireo_CspUtilities"
+    ],
+    "components": [],
+    "config": [
+        {
+            "path": "csp_whitelist_inline_js/settings/mode",
+            "label": "Settings > Mode",
+            "description": ""
+        },
+        {
+            "path": "csp_whitelist_inline_js/settings/logging",
+            "label": "Settings > Logging",
+            "description": ""
+        }
+    ],
+    "tests": {
+        "unit": 14,
+        "integration": 14,
+        "functional": 0
+    }
 }
