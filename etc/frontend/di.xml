@@ -3,4 +3,13 @@
     <type name="Magento\Framework\View\Element\Template">
         <plugin name="Yireo_CspWhitelistInlineJs::addCspInlineScripts" type="Yireo\CspWhitelistInlineJs\Plugin\AddCspInlineScripts"/>
     </type>
+    <!--
+    <type name="Yireo\CspWhitelistInlineJs\Util\AllowBlock">
+        <arguments>
+            <argument name="allowedBlocks" xsi:type="array">
+                <item name="example" xsi:type="string">example.block.name</item>
+            </argument>
+        </arguments>
+    </type>
+    -->
 </config>

@@ -8,25 +8,27 @@ use Yireo\CspWhitelistInlineJs\Config\Source\Mode;
 
 class AllowBlock
 {
-    private Config $config;
-
+    /**
+     * @param Config $config
+     * @param string[] $allowedBlocks
+     */
     public function __construct(
-        Config $config
+        private readonly Config $config,
+        private readonly array $allowedBlocks = []
     ) {
-        $this->config = $config;
     }
 
     public function allow(Template $block): bool
     {
-
-        if ($this->config->getMode() === Mode::WHITELIST_ALL) {
-            return true;
-        }
-
         if ($block->getData('csp_whitelist') === true) {
             return true;
         }
 
-        return false;
+        $blockName = (string)$block->getNameInLayout();
+        if ($blockName !== '' && in_array($blockName, $this->allowedBlocks, true)) {
+            return true;
+        }
+
+        return $this->config->getMode() === Mode::WHITELIST_ALL;
     }
 }

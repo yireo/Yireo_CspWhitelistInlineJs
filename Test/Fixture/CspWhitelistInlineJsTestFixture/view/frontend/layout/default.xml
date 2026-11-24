@@ -7,9 +7,13 @@
                 <arguments>
                     <argument name="csp_whitelist" xsi:type="boolean">true</argument>
                 </arguments>
+                <block name="yireo_csp_whitelist_inline_js_test_fixture.whitelisted_child"
+                       template="Yireo_CspWhitelistInlineJsTestFixture::whitelisted-child.phtml"/>
             </block>
             <block name="yireo_csp_whitelist_inline_js_test_fixture.not_whitelisted"
                    template="Yireo_CspWhitelistInlineJsTestFixture::not-whitelisted.phtml"/>
+            <block name="yireo_csp_whitelist_inline_js_test_fixture.di_whitelisted"
+                   template="Yireo_CspWhitelistInlineJsTestFixture::di-whitelisted.phtml"/>
         </referenceContainer>
         <referenceBlock name="head.additional">
             <block name="yireo_csp_whitelist_inline_js_test_fixture.head_child"

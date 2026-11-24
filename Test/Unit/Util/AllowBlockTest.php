@@ -39,18 +39,52 @@ class AllowBlockTest extends TestCase
         ];
     }
 
-    private function getAllowBlock(string $mode): AllowBlock
+    public function testAllowsBlockNameConfiguredViaDi(): void
+    {
+        $allowBlock = $this->getAllowBlock(Mode::WHITELIST_CUSTOM, ['foo' => 'foo.bar']);
+        $this->assertTrue($allowBlock->allow($this->getBlock(null, 'foo.bar')));
+    }
+
+    /**
+     * @dataProvider getNonAllowedBlockNames
+     */
+    public function testDisallowsBlockNameNotConfiguredViaDi(string $blockName): void
+    {
+        $allowBlock = $this->getAllowBlock(Mode::WHITELIST_CUSTOM, ['foo' => 'foo.bar', 'empty' => '']);
+        $this->assertFalse($allowBlock->allow($this->getBlock(null, $blockName)));
+    }
+
+    public static function getNonAllowedBlockNames(): array
+    {
+        return [
+            [''],
+            ['foo'],
+            ['foo.bar.child'],
+            ['FOO.BAR'],
+        ];
+    }
+
+    public function testSkipsModeCheckForWhitelistedBlock(): void
+    {
+        $config = $this->createMock(Config::class);
+        $config->expects($this->never())->method('getMode');
+
+        $this->assertTrue((new AllowBlock($config))->allow($this->getBlock(true)));
+    }
+
+    private function getAllowBlock(string $mode, array $allowedBlocks = []): AllowBlock
     {
         $config = $this->createMock(Config::class);
         $config->method('getMode')->willReturn($mode);
 
-        return new AllowBlock($config);
+        return new AllowBlock($config, $allowedBlocks);
     }
 
-    private function getBlock(mixed $whitelist): Template
+    private function getBlock(mixed $whitelist, string $name = ''): Template
     {
         $block = $this->createMock(Template::class);
         $block->method('getData')->with('csp_whitelist')->willReturn($whitelist);
+        $block->method('getNameInLayout')->willReturn($name);
 
         return $block;
     }

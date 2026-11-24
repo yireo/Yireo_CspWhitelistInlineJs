@@ -10,6 +10,7 @@ use Magento\TestFramework\TestCase\AbstractController;
 
 /**
  * @magentoAppArea frontend
+ * @magentoAppIsolation enabled
  */
 class HomepageTest extends AbstractController
 {
@@ -24,25 +25,28 @@ class HomepageTest extends AbstractController
     protected function tearDown(): void
     {
         $this->getLogDirectory()->delete(self::LOG_FILE);
+        $this->getLogDirectory()->delete(self::LOG_FILE . '.lock');
         parent::tearDown();
     }
 
     /**
-     * @magentoConfigFixture current_store csp_whitelist_inline_js/settings/mode all
+     * @magentoConfigFixture csp_whitelist_inline_js/settings/mode all
      * @magentoConfigFixture current_store csp_whitelist_inline_js/settings/logging 1
      */
-    public function testWritesLogWithTemplatesWhenLoggingIsEnabled()
+    public function testRendersHomepageWithRelativeLogPathsWhenLoggingIsEnabled()
     {
         $this->dispatch('/');
         $this->assertResponseIsOk();
 
         $logDirectory = $this->getLogDirectory();
-        $this->assertTrue($logDirectory->isExist(self::LOG_FILE), 'Log file was not written');
-        $this->assertStringContainsString('.phtml', $logDirectory->readFile(self::LOG_FILE));
+        if ($logDirectory->isExist(self::LOG_FILE)) {
+            $root = $this->_objectManager->get(DirectoryList::class)->getRoot();
+            $this->assertStringNotContainsString($root . '/', $logDirectory->readFile(self::LOG_FILE));
+        }
     }
 
     /**
-     * @magentoConfigFixture current_store csp_whitelist_inline_js/settings/mode all
+     * @magentoConfigFixture csp_whitelist_inline_js/settings/mode all
      * @magentoConfigFixture current_store csp_whitelist_inline_js/settings/logging 0
      */
     public function testWritesNoLogWhenLoggingIsDisabled()

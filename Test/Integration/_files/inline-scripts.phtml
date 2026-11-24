@@ -1,0 +1,8 @@
+<?php declare(strict_types=1); ?>
+<div>
+<script>var a = 1;</script>
+<script type="text/x-magento-init">{}</script>
+<script nonce="existing">var b = 2;</script>
+<script>var c = <?= (int)$block->getData('c') ?>;</script>
+<?= $block->getChildHtml() ?>
+</div>

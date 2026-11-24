@@ -1,4 +1,13 @@
 <?php declare(strict_types=1);
 
-/** @version 0.1.2 */ ?>
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @version 1.0.0 */
+/** @var Template $block */
+/** @var Escaper $escaper */
+?>
 <script>document.body.dataset.cspWhitelistWhitelisted = 'executed';</script>
+<script>document.body.dataset.cspWhitelistDynamic = '<?= $escaper->escapeJs('executed') ?>';</script>
+<script src="data:text/javascript,document.body.dataset.cspWhitelistExternal='executed'">;</script>
+<?= $block->getChildHtml() ?>

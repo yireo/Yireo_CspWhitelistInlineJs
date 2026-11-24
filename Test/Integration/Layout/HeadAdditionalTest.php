@@ -12,13 +12,13 @@ use PHPUnit\Framework\TestCase;
  */
 class HeadAdditionalTest extends TestCase
 {
-    public function testHeadAdditionalIsWhitelisted()
+    public function testHeadAdditionalIsNotWhitelistedByDefault()
     {
         $page = ObjectManager::getInstance()->get(PageFactory::class)->create();
         $page->addHandle('default');
 
         $block = $page->getLayout()->getBlock('head.additional');
         $this->assertInstanceOf(AbstractBlock::class, $block, 'Block "head.additional" not found');
-        $this->assertTrue($block->getData('csp_whitelist'));
+        $this->assertNotTrue($block->getData('csp_whitelist'));
     }
 }

@@ -9,9 +9,17 @@ export type InlineScriptMode = 'nonce' | 'hash';
 
 export const fixtureScripts = {
     whitelisted: 'cspWhitelistWhitelisted',
+    whitelistedChild: 'cspWhitelistWhitelistedChild',
+    diWhitelisted: 'cspWhitelistDiWhitelisted',
     notWhitelisted: 'cspWhitelistNotWhitelisted',
     headChild: 'cspWhitelistHeadChild',
 };
+
+export const unsafeFixtureScripts = {
+    dynamic: 'cspWhitelistDynamic',
+};
+
+export const externalFixtureScript = 'cspWhitelistExternal';
 
 const token = () => process.env.TEST_TOKEN;
 
@@ -92,6 +100,18 @@ export async function getFixtureScript(page: Page, datasetKey: string): Promise<
     expect(scripts.length, `Fixture script for ${datasetKey} (is Yireo_CspWhitelistInlineJsTestFixture enabled?)`).toBe(1);
 
     return scripts[0];
+}
+
+/**
+ * Return the nonce of the external fixture script, loaded via a src attribute
+ */
+export async function getExternalFixtureScriptNonce(page: Page, datasetKey: string): Promise<string> {
+    const nonces = await page.evaluate(key => Array.from(document.querySelectorAll('script[src]'))
+        .filter(script => (script.getAttribute('src') ?? '').includes(`document.body.dataset.${key}=`))
+        .map(script => (script as HTMLScriptElement).nonce), datasetKey);
+    expect(nonces.length, `External fixture script for ${datasetKey}`).toBe(1);
+
+    return nonces[0];
 }
 
 export async function expectScriptExecuted(page: Page, datasetKey: string) {

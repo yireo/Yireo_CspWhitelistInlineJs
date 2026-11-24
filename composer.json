@@ -9,7 +9,7 @@
         "magento/module-config": "^101.0",
         "magento/module-store": "^100.0 || ^101.0",
         "php": ">=8.2 <8.6",
-        "yireo/magento2-csp-utilities": "^1.0"
+        "yireo/magento2-csp-utilities": "^1.0.3"
     },
     "require-dev": {
         "ext-pcre": "*",
