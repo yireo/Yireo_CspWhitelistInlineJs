@@ -10,11 +10,13 @@
             <resource>Yireo_CspWhitelistInlineJs::config</resource>
             <group id="settings" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Settings</label>
-                <field id="mode" type="select" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="mode" type="select" translate="label comment" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Mode</label>
+                    <comment>Whitelisting everything adds a CSP nonce or hash to any inline script, including injected ones, which defeats the purpose of CSP. In production mode, this option is ignored unless "csp_whitelist_inline_js/allow_all_in_production" is enabled in app/etc/env.php.</comment>
                     <source_model>Yireo\CspWhitelistInlineJs\Config\Source\Mode</source_model>
+                    <backend_model>Yireo\CspWhitelistInlineJs\Config\Backend\Mode</backend_model>
                 </field>
-                <field id="logging" type="select" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="logging" type="select" translate="label" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Logging</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>

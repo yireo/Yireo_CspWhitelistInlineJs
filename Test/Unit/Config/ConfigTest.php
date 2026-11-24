@@ -3,6 +3,8 @@
 namespace Yireo\CspWhitelistInlineJs\Test\Unit\Config;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\DeploymentConfig;
+use Magento\Framework\App\State;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
@@ -12,28 +14,87 @@ use Yireo\CspWhitelistInlineJs\Config\Config;
 
 class ConfigTest extends TestCase
 {
-    public function testReadsModeInStoreScopeOfCurrentStore(): void
+    public function testReadsModeInDefaultScopeOnlyOnce(): void
+    {
+        $scopeConfig = $this->createMock(ScopeConfigInterface::class);
+        $scopeConfig->expects($this->once())
+            ->method('getValue')
+            ->with('csp_whitelist_inline_js/settings/mode')
+            ->willReturn('all');
+
+        $config = $this->getConfig($scopeConfig);
+        $this->assertSame(['all', 'all'], [$config->getMode(), $config->getMode()]);
+    }
+
+    /**
+     * @dataProvider getModeValues
+     */
+    public function testModeFallsBackToCustom(?string $value): void
+    {
+        $this->assertSame('custom', $this->getConfig($this->getScopeConfig($value))->getMode());
+    }
+
+    public static function getModeValues(): array
+    {
+        return [
+            [null],
+            [''],
+            ['custom'],
+            ['foobar'],
+            ['ALL'],
+        ];
+    }
+
+    /**
+     * @dataProvider getProductionModeValues
+     */
+    public function testModeAllInProductionModeRequiresDeploymentFlag(mixed $flag, string $expectedMode): void
+    {
+        $deploymentConfig = $this->createMock(DeploymentConfig::class);
+        $deploymentConfig->method('get')->with(Config::ALLOW_ALL_IN_PRODUCTION)->willReturn($flag);
+
+        $config = $this->getConfig($this->getScopeConfig('all'), State::MODE_PRODUCTION, $deploymentConfig);
+        $this->assertSame($expectedMode, $config->getMode());
+    }
+
+    public static function getProductionModeValues(): array
+    {
+        return [
+            [null, 'custom'],
+            [false, 'custom'],
+            [0, 'custom'],
+            [true, 'all'],
+            [1, 'all'],
+        ];
+    }
+
+    public function testModeAllInDeveloperModeDoesNotRequireDeploymentFlag(): void
+    {
+        $deploymentConfig = $this->createMock(DeploymentConfig::class);
+        $deploymentConfig->expects($this->never())->method('get');
+
+        $config = $this->getConfig($this->getScopeConfig('all'), State::MODE_DEVELOPER, $deploymentConfig);
+        $this->assertSame('all', $config->getMode());
+    }
+
+    public function testReadsLoggingInStoreScopeOfCurrentStoreOnlyOnce(): void
     {
         $store = $this->createMock(StoreInterface::class);
+        $store->method('getId')->willReturn(1);
         $storeManager = $this->createMock(StoreManagerInterface::class);
         $storeManager->method('getStore')->willReturn($store);
 
         $scopeConfig = $this->createMock(ScopeConfigInterface::class);
         $scopeConfig->expects($this->once())
             ->method('getValue')
-            ->with('csp_whitelist_inline_js/settings/mode', ScopeInterface::SCOPE_STORE, $store)
-            ->willReturn('all');
+            ->with('csp_whitelist_inline_js/settings/logging', ScopeInterface::SCOPE_STORE, $store)
+            ->willReturn('1');
 
-        $this->assertSame('all', (new Config($scopeConfig, $storeManager))->getMode());
+        $config = $this->getConfig($scopeConfig, State::MODE_DEVELOPER, null, $storeManager);
+        $this->assertSame([true, true], [$config->logging(), $config->logging()]);
     }
 
-    public function testModeDefaultsToCustom(): void
-    {
-        $this->assertSame('custom', $this->getConfig(null)->getMode());
-        $this->assertSame('custom', $this->getConfig('')->getMode());
-    }
-
-    public function testFallsBackToDefaultsWithoutStore(): void
+    public function testLoggingIsDisabledWithoutStore(): void
     {
         $storeManager = $this->createMock(StoreManagerInterface::class);
         $storeManager->method('getStore')->willThrowException(new NoSuchEntityException());
@@ -41,9 +102,7 @@ class ConfigTest extends TestCase
         $scopeConfig = $this->createMock(ScopeConfigInterface::class);
         $scopeConfig->expects($this->never())->method('getValue');
 
-        $config = new Config($scopeConfig, $storeManager);
-        $this->assertSame('custom', $config->getMode());
-        $this->assertFalse($config->logging());
+        $this->assertFalse($this->getConfig($scopeConfig, State::MODE_DEVELOPER, null, $storeManager)->logging());
     }
 
     /**
@@ -51,7 +110,7 @@ class ConfigTest extends TestCase
      */
     public function testLogging(?string $value, bool $expected): void
     {
-        $this->assertSame($expected, $this->getConfig($value)->logging());
+        $this->assertSame($expected, $this->getConfig($this->getScopeConfig($value))->logging());
     }
 
     public static function getLoggingValues(): array
@@ -63,14 +122,33 @@ class ConfigTest extends TestCase
         ];
     }
 
-    private function getConfig(?string $value): Config
+    private function getScopeConfig(?string $value): ScopeConfigInterface
     {
-        $storeManager = $this->createMock(StoreManagerInterface::class);
-        $storeManager->method('getStore')->willReturn($this->createMock(StoreInterface::class));
-
         $scopeConfig = $this->createMock(ScopeConfigInterface::class);
         $scopeConfig->method('getValue')->willReturn($value);
 
-        return new Config($scopeConfig, $storeManager);
+        return $scopeConfig;
+    }
+
+    private function getConfig(
+        ScopeConfigInterface $scopeConfig,
+        string $appMode = State::MODE_DEVELOPER,
+        ?DeploymentConfig $deploymentConfig = null,
+        ?StoreManagerInterface $storeManager = null
+    ): Config {
+        if ($storeManager === null) {
+            $storeManager = $this->createMock(StoreManagerInterface::class);
+            $storeManager->method('getStore')->willReturn($this->createMock(StoreInterface::class));
+        }
+
+        $appState = $this->createMock(State::class);
+        $appState->method('getMode')->willReturn($appMode);
+
+        return new Config(
+            $scopeConfig,
+            $storeManager,
+            $appState,
+            $deploymentConfig ?? $this->createMock(DeploymentConfig::class)
+        );
     }
 }

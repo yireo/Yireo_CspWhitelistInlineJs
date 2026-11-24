@@ -13,19 +13,28 @@ class ConfigTest extends TestCase
 {
     public function testDefaults()
     {
-        $config = ObjectManager::getInstance()->get(Config::class);
+        $config = ObjectManager::getInstance()->create(Config::class);
         $this->assertSame('custom', $config->getMode());
         $this->assertFalse($config->logging());
     }
 
     /**
-     * @magentoConfigFixture current_store csp_whitelist_inline_js/settings/mode all
+     * @magentoConfigFixture csp_whitelist_inline_js/settings/mode all
      * @magentoConfigFixture current_store csp_whitelist_inline_js/settings/logging 1
      */
-    public function testStoreViewValuesAreUsed()
+    public function testDefaultModeAndStoreViewLoggingAreUsed()
     {
-        $config = ObjectManager::getInstance()->get(Config::class);
+        $config = ObjectManager::getInstance()->create(Config::class);
         $this->assertSame('all', $config->getMode());
         $this->assertTrue($config->logging());
+    }
+
+    /**
+     * @magentoConfigFixture current_store csp_whitelist_inline_js/settings/mode all
+     */
+    public function testStoreViewModeIsIgnored()
+    {
+        $config = ObjectManager::getInstance()->create(Config::class);
+        $this->assertSame('custom', $config->getMode());
     }
 }
