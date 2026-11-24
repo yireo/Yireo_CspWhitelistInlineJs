@@ -2,59 +2,79 @@
 
 namespace Yireo\CspWhitelistInlineJs\Logger;
 
-use Magento\Framework\Filesystem;
-use Magento\Framework\View\Element\Template;
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Exception\FileSystemException;
+use Magento\Framework\Filesystem;
+use Magento\Framework\Filesystem\Driver\File as FileDriver;
+use Magento\Framework\View\Element\Template;
 
 class ScriptLogger
 {
-    private DirectoryList $directoryList;
-    private Filesystem $filesystem;
+    public const LOG_FILE = 'yireo-csp-whitelist-inline-js.log';
 
     private array $templates = [];
 
     public function __construct(
-        DirectoryList $directoryList,
-        Filesystem $filesystem
+        private readonly DirectoryList $directoryList,
+        private readonly Filesystem $filesystem,
+        private readonly FileDriver $fileDriver
     ) {
-        $this->directoryList = $directoryList;
-        $this->filesystem = $filesystem;
     }
 
     public function add(Template $block): bool
     {
-        $template = $block->getTemplateFile();
-        if (empty($template)) {
+        try {
+            $template = (string)$block->getTemplateFile();
+            if ($template === '' || false === $this->fileDriver->isFile($template)) {
+                return false;
+            }
+        } catch (FileSystemException $fileSystemException) {
             return false;
         }
 
-        $reader = $this->filesystem->getDirectoryRead($this->directoryList::ROOT);
-        if (false === $reader->isFile($template)) {
-            return false;
-        }
-
-        $this->templates[] = $template;
+        $this->templates[] = $this->getRelativePath($template);
         return true;
     }
 
-    public function log()
+    public function log(): void
     {
-        $logFile = 'yireo-csp-whitelist-inline-js.log';
-
-        $writer = $this->filesystem->getDirectoryWrite($this->directoryList::LOG);
-        if ($writer->isExist($logFile)) {
-            $currentTemplates = explode("\n", trim($writer->readFile($logFile), " \f\n\r\t\v\x00"));
-        } else {
-            $currentTemplates = [];
+        if (empty($this->templates)) {
+            return;
         }
 
-        $templates = array_merge($currentTemplates, $this->templates);
-        $templates = array_unique($templates);
-        sort($templates);
-
+        $newTemplates = $this->templates;
         $this->templates = [];
 
-        $contents = implode("\n", $templates)."\n";
-        $writer->writeFile($logFile, $contents, 'w+');
+        try {
+            $writer = $this->filesystem->getDirectoryWrite(DirectoryList::LOG);
+            $lock = $writer->openFile(self::LOG_FILE . '.lock', 'w');
+            $lock->lock();
+
+            try {
+                $currentTemplates = [];
+                if ($writer->isExist(self::LOG_FILE)) {
+                    $currentTemplates = explode("\n", trim($writer->readFile(self::LOG_FILE), " \f\n\r\t\v\x00"));
+                }
+
+                $templates = array_filter(array_unique(array_merge($currentTemplates, $newTemplates)));
+                sort($templates);
+                $writer->writeFile(self::LOG_FILE, implode("\n", $templates) . "\n", 'w');
+            } finally {
+                $lock->unlock();
+                $lock->close();
+            }
+        } catch (FileSystemException $fileSystemException) {
+            return;
+        }
+    }
+
+    private function getRelativePath(string $template): string
+    {
+        $root = rtrim($this->directoryList->getRoot(), '/') . '/';
+        if (str_starts_with($template, $root)) {
+            return substr($template, strlen($root));
+        }
+
+        return $template;
     }
 }

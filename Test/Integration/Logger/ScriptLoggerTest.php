@@ -26,6 +26,7 @@ class ScriptLoggerTest extends TestCase
     protected function tearDown(): void
     {
         $this->getLogDirectory()->delete(self::LOG_FILE);
+        $this->getLogDirectory()->delete(self::LOG_FILE . '.lock');
     }
 
     public function testDoesNotAddBlockWithoutTemplate()
@@ -49,7 +50,7 @@ class ScriptLoggerTest extends TestCase
         $this->assertTrue($scriptLogger->add($titleBlock));
         $scriptLogger->log();
 
-        $titleTemplate = $titleBlock->getTemplateFile();
+        $titleTemplate = $this->getRelativePath((string)$titleBlock->getTemplateFile());
         $templates = [$titleTemplate, '/zzz/existing.phtml', '/aaa/existing.phtml'];
         sort($templates);
         $this->assertSame(implode("\n", $templates) . "\n", $logDirectory->readFile(self::LOG_FILE));
@@ -57,6 +58,35 @@ class ScriptLoggerTest extends TestCase
         $logDirectory->writeFile(self::LOG_FILE, "/aaa/existing.phtml\n");
         $scriptLogger->log();
         $this->assertSame("/aaa/existing.phtml\n", $logDirectory->readFile(self::LOG_FILE));
+    }
+
+    public function testStoresTemplatePathRelativeToMagentoRoot()
+    {
+        $titleBlock = $this->getBlock('Magento_Theme::html/title.phtml');
+        $scriptLogger = $this->getScriptLogger();
+        $this->assertTrue($scriptLogger->add($titleBlock));
+        $scriptLogger->log();
+
+        $root = ObjectManager::getInstance()->get(DirectoryList::class)->getRoot();
+        $contents = $this->getLogDirectory()->readFile(self::LOG_FILE);
+        $this->assertStringContainsString('html/title.phtml', $contents);
+        $this->assertStringNotContainsString($root . '/', $contents);
+    }
+
+    public function testWritesNothingWithoutAddedTemplates()
+    {
+        $this->getScriptLogger()->log();
+        $this->assertFalse($this->getLogDirectory()->isExist(self::LOG_FILE));
+
+        $this->getLogDirectory()->writeFile(self::LOG_FILE, "/aaa/existing.phtml\n");
+        $this->getScriptLogger()->log();
+        $this->assertSame("/aaa/existing.phtml\n", $this->getLogDirectory()->readFile(self::LOG_FILE));
+    }
+
+    private function getRelativePath(string $template): string
+    {
+        $root = rtrim(ObjectManager::getInstance()->get(DirectoryList::class)->getRoot(), '/') . '/';
+        return str_starts_with($template, $root) ? substr($template, strlen($root)) : $template;
     }
 
     private function getBlock(string $template): Template
