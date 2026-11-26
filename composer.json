@@ -13,6 +13,7 @@
     },
     "require-dev": {
         "ext-pcre": "*",
+        "loki/magento2-functional-tests": "@dev",
         "magento/module-csp": "^100.4",
         "phpunit/phpunit": "^9.5 || ^10.5",
         "yireo/magento2-integration-test-helper": "~0.0"
@@ -20,9 +21,7 @@
     "suggest": {
         "yireo/magento2-page-cache-csp-nonce-regenerator": "Regenerate CSP nonces per request when the built-in Full Page Cache is enabled"
     },
-    "license": [
-        "OSL-3.0"
-    ],
+    "license": "OSL-3.0",
     "autoload": {
         "files": [
             "registration.php"
