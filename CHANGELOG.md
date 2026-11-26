@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 26 November 2026
+### Added
+- Admin warning when CSP nonces may be cached by the Full Page Cache
+- DI argument `allowedBlocks` of `AllowBlock` to whitelist specific blocks
+
+### Changed
+- BREAKING: Only static inline scripts literally present in the template of a whitelisted block are whitelisted; child blocks and scripts containing PHP output are no longer whitelisted
+- BREAKING: The block `head.additional` is no longer whitelisted by default
+- Whitelist mode `all` is restricted to the global scope and ignored in production mode, unless `csp_whitelist_inline_js/allow_all_in_production` is enabled in env.php
+- Require yireo/magento2-csp-utilities ^1.1.0
+- Document template-only whitelisting, the DI allowlist and caching in the README
+
+### Fixed
+- Script logger no longer breaks rendering, logs paths relative to the Magento root and locks the log file against concurrent requests
+
 ## [0.1.2] - 06 November 2026
 ### Fixed
 - Add type hints to code
