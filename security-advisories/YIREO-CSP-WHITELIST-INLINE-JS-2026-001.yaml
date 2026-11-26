@@ -1,0 +1,34 @@
+schema_version: "1.6.0"
+id: YIREO-CSP-WHITELIST-INLINE-JS-2026-001
+published: "2026-11-26T00:00:00Z"
+modified: "2026-11-26T00:00:00Z"
+aliases: []
+summary: Whitelisted blocks add CSP nonces to injected and dynamic inline scripts
+details: >
+  Before version 1.0.0, every inline script in the HTML output of a whitelisted block received a CSP
+  nonce or hash, including the output of child blocks and scripts containing dynamic (PHP) output.
+  The container head.additional was whitelisted by default. A script injected through content
+  rendered in such a block (for instance stored XSS via configuration or CMS data) was therefore
+  trusted by the Content Security Policy, defeating CSP as a defence against XSS. In addition, the
+  whitelist mode "all" could be enabled per store view and in production mode. Version 1.0.0 only
+  whitelists static inline scripts that are literally present in the template file of a whitelisted
+  block, no longer whitelists head.additional by default, and restricts mode "all" to the global
+  scope and to non-production mode unless explicitly allowed in env.php.
+severity:
+  - type: CVSS_V3
+    score: "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:L/A:N"
+affected:
+  - package:
+      ecosystem: Packagist
+      name: yireo/magento2-csp-whitelist-inline-js
+    ranges:
+      - type: ECOSYSTEM
+        events:
+          - introduced: "0"
+          - fixed: "1.0.0"
+references:
+  - type: PACKAGE
+    url: https://github.com/yireo/Yireo_CspWhitelistInlineJs
+database_specific:
+  cwe_ids:
+    - CWE-693
